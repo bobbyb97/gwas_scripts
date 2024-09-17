@@ -7,7 +7,6 @@
 #SBATCH --account=HMH19_sc
 #SBATCH --partition=sla-prio
 
-conda activate bioinfo
 # Define the input directory and reference genome
 input_dir="<your_input_directory>"
 REF="<your_reference_genome>"
@@ -25,8 +24,7 @@ align_reads() {
     local output="$3"
     # Align the files to genome
     echo "Processing $r1 $r2 $output"
-    bwa mem -T 40 ${REF} "$r1" "$r2" | samtools sort > "${output}.bam"
-    
+    bwa mem -T 40 ${REF} "$r1" "$r2" | samtools view -b | samtools sort > "${output}.bam"
 }
 # Generate the array of file pairs
 file_pairs=()
@@ -47,4 +45,4 @@ export input_dir
 
 # Use GNU Parallel to run the align_reads function in parallel on the paired reads in the file_pairs array
 
-parallel -j $SLURM_NTASKS --colsep ' ' align_reads ::: "${file_pairs[@]}"
+parallel --colsep ' ' -j $SLURM_NTASKS align_reads ::: "${file_pairs[@]}"
