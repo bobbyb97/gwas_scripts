@@ -7,29 +7,44 @@
 #SBATCH --account=HMH19_sc
 #SBATCH --partition=sla-prio
 
-files=(
-    "/Users/jonasbush/trimmed_fastq/420_CALI_B_trimmed_R1.fq.gz /Users/jonasbush/trimmed_fastq/420_CALI_B_trimmed_R2.fq.gz 420_CALI_B"
-    "/Users/jonasbush/trimmed_fastq/499_CALI_B_trimmed_R1.fq.gz /Users/jonasbush/trimmed_fastq/499_CALI_B_trimmed_R2.fq.gz 499_CALI_B"
-)
-REF=/Users/jonasbush/ncbi_dataset/data/GCA_041682495.1/GCA_041682495.1_iyBomFerv1_genomic.fna
+conda activate bioinfo
+# Define the input directory and reference genome
+input_dir="<your_input_directory>"
+REF="<your_reference_genome>"
 
 # Index the reference genome (only needs to be done once)
-#bwa index ${REF}
+bwa index ${REF}
 
-# Function to process a single set of files
-process_files() {
-    r1=$1
-    r2=$2
-    output=$3
+##--NOTHING BELOW THIS LINE SHOULD BE MODIFIED--##
+
+# Define the function to process a single set of files
+align_reads() {
+    # Assign variables in the function
+    local r1="$1"
+    local r2="$2"
+    local output="$3"
     # Align the files to genome
     echo "Processing $r1 $r2 $output"
     bwa mem -T 40 ${REF} "$r1" "$r2" | samtools sort > "${output}.bam"
     
 }
+# Generate the array of file pairs
+file_pairs=()
+for r1 in "$input_dir"/*_R1.fq.gz; do
+    r2="${r1/_R1.fq.gz/_R2.fq.gz}"
+    if [[ -f "$r2" ]]; then
+        output="${r1/_R1.fq.gz/}"
+        file_pairs+=("$r1 $r2 $output")
+    else
+        echo "Warning: No matching R2 file for $r1" >&2
+    fi
+done
 
 # Export variables to the parallel environment
-export -f process_files
+export -f align_reads
 export REF
+export input_dir
 
-# Use GNU Parallel to process files in parallel
-parallel -j $SLURM_NTASKS --colsep ' ' process_files ::: "${files[@]}"
+# Use GNU Parallel to run the align_reads function in parallel on the paired reads in the file_pairs array
+
+parallel -j $SLURM_NTASKS --colsep ' ' align_reads ::: "${file_pairs[@]}"
