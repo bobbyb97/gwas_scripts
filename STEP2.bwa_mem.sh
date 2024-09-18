@@ -24,7 +24,7 @@ align_reads() {
     local output="$3"
     # Align the files to genome
     echo "Processing $r1 $r2 $output"
-    # bwa mem -T 40 ${REF} "$r1" "$r2" | samtools view -b | samtools sort > "${output}.bam"
+    bwa mem -T 40 ${REF} "$r1" "$r2" | samtools view -b | samtools sort > "${output}.bam"
 }
 # Generate the array of file pairs
 file_pairs=()

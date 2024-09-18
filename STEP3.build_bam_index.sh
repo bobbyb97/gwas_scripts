@@ -39,7 +39,7 @@ files=(
     "/storage/group/hmh19/default/NGS_Data_Color_Genetics_2023/01.Trimmed_fastq/TDR010_1P.fq /storage/group/hmh19/default/NGS_Data_Color_Genetics_2023/01.Trimmed_fastq/TDR010_2P.fq TDR010"
     "/storage/group/hmh19/default/NGS_Data_Color_Genetics_2023/01.Trimmed_fastq/TDR011_1P.fq /storage/group/hmh19/default/NGS_Data_Color_Genetics_2023/01.Trimmed_fastq/TDR011_2P.fq TDR011"
     "/storage/group/hmh19/default/NGS_Data_Color_Genetics_2023/01.Trimmed_fastq/TDR012_1P.fq /storage/group/hmh19/default/NGS_Data_Color_Genetics_2023/01.Trimmed_fastq/TDR012_2P.fq TDR012"
-   #"/storage/group/hmh19/default/NGS_Data_Color_Genetics_2023/01.Trimmed_fastq/TDR014_1P.fq /storage/group/hmh19/default/NGS_Data_Color_Genetics_2023/01.Trimmed_fastq/TDR014_2P.fq TDR014"
+    "/storage/group/hmh19/default/NGS_Data_Color_Genetics_2023/01.Trimmed_fastq/TDR014_1P.fq /storage/group/hmh19/default/NGS_Data_Color_Genetics_2023/01.Trimmed_fastq/TDR014_2P.fq TDR014"
     "/storage/group/hmh19/default/NGS_Data_Color_Genetics_2023/01.Trimmed_fastq/TDR016_1P.fq /storage/group/hmh19/default/NGS_Data_Color_Genetics_2023/01.Trimmed_fastq/TDR016_2P.fq TDR016"
     "/storage/group/hmh19/default/NGS_Data_Color_Genetics_2023/01.Trimmed_fastq/TDR017_1P.fq /storage/group/hmh19/default/NGS_Data_Color_Genetics_2023/01.Trimmed_fastq/TDR017_2P.fq TDR017"
     "/storage/group/hmh19/default/NGS_Data_Color_Genetics_2023/01.Trimmed_fastq/TDR018_1P.fq /storage/group/hmh19/default/NGS_Data_Color_Genetics_2023/01.Trimmed_fastq/TDR018_2P.fq TDR018"
@@ -56,7 +56,7 @@ for input in "${files[@]}"; do
     #SamtoBam
     #samtools sort /storage/home/tpd5366/scratch/NGS/230310_VH00707_75_AAC2C2GHV/fastq/02.Alignment/SAMS/${3}.sam -o /storage/home/tpd5366/scratch/NGS/230310_VH00707_75_AAC2C2GHV/fastq/02.Alignment/BAMS/${3}.bam
     #Alternative /w picard
-    #picard AddOrReplaceReadGroups INPUT=/storage/home/tpd5366/scratch/NGS/230310_VH00707_75_AAC2C2GHV/fastq/02.Alignment/BAMS/${3}.bam OUTPUT=/storage/home/tpd5366/scratch/NGS/230310_VH00707_75_AAC2C2GHV/fastq/02.Alignment/BAMS/${3}_fixed.bam VALIDATION_STRINGENCY=LENIENT RGID=${3}_RGID RGLB=lib1 RGPL=illumina RGPU=${RGPU} RGSM=${3}
+    picard AddOrReplaceReadGroups INPUT=/storage/home/tpd5366/scratch/NGS/230310_VH00707_75_AAC2C2GHV/fastq/02.Alignment/BAMS/${3}.bam OUTPUT=/storage/home/tpd5366/scratch/NGS/230310_VH00707_75_AAC2C2GHV/fastq/02.Alignment/BAMS/${3}_fixed.bam VALIDATION_STRINGENCY=LENIENT RGID=${3}_RGID RGLB=lib1 RGPL=illumina RGPU=${RGPU} RGSM=${3}
     #Building Index for the new .bam file
     sambamba index /storage/home/tpd5366/scratch/NGS/230310_VH00707_75_AAC2C2GHV/fastq/02.Alignment/BAMS/${3}_fixed.bam
 done
