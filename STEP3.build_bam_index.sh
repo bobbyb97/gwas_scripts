@@ -9,9 +9,12 @@
 
 input_dir="trimmed_fastq"
 
+##--NOTHING BELOW THIS LINE SHOULD BE MODIFIED--##
+
 # Generate the array of file pairs
 file_pairs=()
 
+# Separating file strings for later use
 for r1 in "$input_dir"/*_R1.fq.gz; do
     r2="${r1/_R1.fq.gz/_R2.fq.gz}"
     if [[ -f "$r2" ]]; then
@@ -23,21 +26,25 @@ for r1 in "$input_dir"/*_R1.fq.gz; do
 done
 
 for input in "${file_pairs[@]}"; do
+    # Split the input into r1, r2, and output
+    IFS=' ' read -r r1 r2 output <<< "$input"
 
     # Extract RGPU
-    RGPU=$(zcat ${input} | head -1 | grep '^@' | sed 's/:/\t/g' | sed 's/.1/\t/'| cut -f1 | sed 's/@//')
-    echo ${RGPU} ${input}
-    # Add read groups with picard
-    # picard AddOrReplaceReadGroups \
-    # INPUT=${input}.bam \
-    # OUTPUT=${input}_fixed.bam \
-    # VALIDATION_STRINGENCY=LENIENT \
-    # RGID=${input}_RGID \
-    # RGLB=lib1 \
-    # RGPL=illumina \
-    # RGPU=${RGPU} \
-    # RGSM=${input}
+    RGPU=$(zcat "${r1}" | head -1 | grep '^@' | sed 's/:/\t/g' | sed 's/.1/\t/' | cut -f1 | sed 's/@//')
 
-    # Build BAM index with sambamba
-    # sambamba index /storage/home/tpd5366/scratch/NGS/230310_VH00707_75_AAC2C2GHV/fastq/02.Alignment/BAMS/${input}_fixed.bam
+    # Echo RGPU and output to verify the function is reading the correct values
+    # Included for
+    echo "${RGPU} ${output}"
+
+    # Add read groups with picard
+    picard AddOrReplaceReadGroups \
+        INPUT="${output}.bam" \
+        OUTPUT="${output}_fixed.bam" \
+        VALIDATION_STRINGENCY=LENIENT \
+        RGID="${output}_RGID" \
+        RGLB=lib1 \
+        RGPL=illumina \
+        RGPU="${RGPU}" \
+        RGSM="${output}"
 done
+
