@@ -8,11 +8,11 @@
 #SBATCH --partition=sla-prio
 
 # Define the input directory and reference genome
-input_dir="<your_input_directory>"
-REF="<your_reference_genome>"
+input_dir="trimmed_fastq"
+REF="ncbi_dataset/data/GCA_041682495.1/GCA_041682495.1_iyBomFerv1_genomic.fna"
 
 # Index the reference genome (only needs to be done once)
-# bwa index ${REF}
+bwa index ${REF}
 
 ##--NOTHING BELOW THIS LINE SHOULD BE MODIFIED--##
 
