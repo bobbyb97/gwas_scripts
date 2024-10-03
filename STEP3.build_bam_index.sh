@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH -J samtobam
+#SBATCH -J build_bam_index
 #SBATCH -n 8
-#SBATCH --time 18-023:59:00
+#SBATCH --time 3-023:59:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
 #SBATCH --account=HMH19_sc
@@ -34,8 +34,8 @@ for input in "${file_pairs[@]}"; do
     RGPU=$(gunzip -c "${r1}" | head -1 | grep '^@' | sed 's/:/\t/g' | sed 's/.1/\t/' | cut -f1 | sed 's/@//')
 
     # Echo RGPU and output to verify the function is reading the correct values
-    # Included for debugging
-    echo "Processing: ${RGPU} ${output}"
+    # Included for
+    echo "${RGPU} ${output} ${r1} ${r2}"
 
     # Add read groups with picard
     picard AddOrReplaceReadGroups \
