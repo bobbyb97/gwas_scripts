@@ -8,9 +8,15 @@
 #SBATCH --account=HMH19_sc
 #SBATCH --partition=sla-prio
 
-FILE1=/storage/home/tpd5366/scratch/NGS/230310_VH00707_75_AAC2C2GHV/fastq/02.Alignment/VCFS/Raw/
-FILE2=/storage/home/tpd5366/scratch/NGS/230310_VH00707_75_AAC2C2GHV/fastq/02.Alignment/VCFS/Raw/GenomicsDB/
-FILE3=/storage/home/tpd5366/scratch/NGS/230310_VH00707_75_AAC2C2GHV/fastq/02.Alignment/VCFS/Raw/TEMP/
-REF=/storage/home/tpd5366/scratch/NGS/230310_VH00707_75_AAC2C2GHV/fastq/refs/flavifrons/Bombus_flavifrons.p_ctg.purged.clean.fasta
+# Define variables
+VCF="vcf_files"
+GENDB="vcf_files/genomicDB"
+TMP_DIR="vcf_files/tmp"
+REF="GCA_041682495.1_iyBomFerv1_genomic.fna"
 
-/storage/home/tpd5366/work/gatk-4.4.0.0/gatk GenotypeGVCFs -R ${REF} -V gendb://${FILE2} -O ${FILE1}Vcfcall_from_genomicsdb_bpresolution_strict_alignment.vcf.gz --tmp-dir ${FILE3}
+# Genotype aggregated VCFs
+gatk GenotypeGVCFs\
+    -R ${REF}\
+    -V gendb://${GENDB}\
+    -O ${VCF}/joint_vcf_call_bpres.vcf.gz\
+    --TMP_DIR ${TMP_DIR}

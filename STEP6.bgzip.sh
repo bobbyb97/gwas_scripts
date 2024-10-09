@@ -8,12 +8,22 @@
 #SBATCH --account=HMH19_sc
 #SBATCH --partition=sla-prio
 
-FILE2=/storage/home/tpd5366/scratch/NGS/230310_VH00707_75_AAC2C2GHV/fastq/02.Alignment/VCFS/Raw/
+input_dir="vcf_files"
 
-for file in ${FILE2}*.g.vcf; do
-bgzip $file
+# Activate conda env
+source ~/.bashrc
+# micromamba activate bioinfo
+
+# bgzip all vcf files
+for f in ${input_dir}/*.g.vcf; do
+	echo "Zipping $f..."
+	# bgzip $f
 done
 
-for zip in ${FILE2}*.g.vcf.gz; do
-	/storage/home/tpd5366/work/gatk-4.4.0.0/gatk IndexFeatureFile -I $zip
+# activate gatk env
+micromamba activate gatk
+
+# index all vcf.gz files
+for f in ${input_dir}/*.g.vcf.gz; do
+	gatk IndexFeatureFile -I $f
 done
