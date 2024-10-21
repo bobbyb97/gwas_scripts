@@ -1,15 +1,16 @@
 #!/bin/bash
-#SBATCH -J bwa_align
+#SBATCH -J bwa_align2
 #SBATCH -n 8
-#SBATCH --time 18-023:59:00
+#SBATCH --mem-per-cpu 16G
+#SBATCH --time 6-023:59:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
 #SBATCH --account=HMH19_sc
 #SBATCH --partition=sla-prio
 
 # Define the input directory and reference genome
-input_dir="trimmed_fastq"
-REF="ncbi_dataset/data/GCA_041682495.1/GCA_041682495.1_iyBomFerv1_genomic.fna"
+input_dir=./trimmed_fastq_2
+REF=./GCA_041682495.1_iyBomFerv1_genomic.fna
 
 # Index the reference genome (only needs to be done once)
 bwa index ${REF}
@@ -41,16 +42,3 @@ done
 for x in "${file_pairs[@]}"; do
 align_reads $x;
 done
-
-
-## The following code is designed to align reads in parallel
-## bwa-mem struggles with memory issues with this approach
-
-## Export variables to the parallel environment
-# export -f align_reads
-# export REF
-# export input_dir
-
-## Use GNU Parallel to run the align_reads function in parallel on the paired reads in the file_pairs array
-
-# parallel --colsep ' ' -j $SLURM_NTASKS align_reads ::: "${file_pairs[@]}"

@@ -58,5 +58,5 @@ for input in "${files[@]}"; do
     set -- $input
     echo "Base recalibration applying for ${1}"
 
-/storage/home/tpd5366/work/gatk-4.4.0.0/gatk ApplyBQSR -R ${REF} -I ${FILE}${1}_sorted_dedup_reads.bam -bqsr ${FILE2}${1}_recal_data.table -O ${FILE1}${1}_recalibrated_reads.bam
+gatk ApplyBQSR -R ${REF} -I ${FILE}${1}_sorted_dedup_reads.bam -bqsr ${FILE2}${1}_recal_data.table -O ${FILE1}${1}_recalibrated_reads.bam
 done

@@ -21,9 +21,9 @@ for f in ${input_dir}/*.g.vcf; do
 done
 
 # activate gatk env
-micromamba activate gatk
+# micromamba activate gatk
 
-# index all vcf.gz files
-for f in ${input_dir}/*.g.vcf.gz; do
-	gatk IndexFeatureFile -I $f
-done
+# # index all vcf.gz files
+# for f in ${input_dir}/*.g.vcf.gz; do
+# 	gatk IndexFeatureFile -I $f
+# done

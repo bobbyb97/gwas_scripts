@@ -12,8 +12,6 @@ output_dir="sorted_dedup"
 
 file_pairs=()
 
-##--NOTHING BELOW THIS LINE SHOULD BE MODIFIED--##
-
 # Generating array of file names
 # Separating strings for later use
 for r1 in "$input_dir"/*_R1.fq.gz; do

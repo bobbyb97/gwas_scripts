@@ -18,5 +18,4 @@ REF="GCA_041682495.1_iyBomFerv1_genomic.fna"
 gatk GenotypeGVCFs\
     -R ${REF}\
     -V gendb://${GENDB}\
-    -O ${VCF}/joint_vcf_call_bpres.vcf.gz\
-    --TMP_DIR ${TMP_DIR}
+    -O ${VCF}/joint_vcf_call_bpres.vcf.gz
