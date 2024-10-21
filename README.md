@@ -1,5 +1,5 @@
 
- ### Collection of scripts used for GWAS analysis pipeline in the Hines lab.
+ ### Collection of scripts used for GWAS analysis pipeline in the Hines lab
 ----
 
 This pipeline takes as input a set of fastq files generated from a sequencing run. 
