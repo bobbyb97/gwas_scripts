@@ -21,4 +21,4 @@ This pipeline takes as input a set of fastq files generated from a sequencing ru
 - Not necessary for a GWAS, but includes additional steps to filter for specific variant types and then uses bcftools to produce a joint vcf for use in PLINK.
 
 
-Thanks to Tunc Dabak and Sarthok Rahman for their help and for sharing code.
+Thanks to Tunc Dabak and Sarthok Rahman for their help and for most of the code.
