@@ -7,7 +7,7 @@
 #SBATCH --mem-per-cpu 8000
 
 
-input_dir="vcf_files"
+input_dir="calferv25_vcf_files"
 
 # Activate conda env
 source ~/.bashrc

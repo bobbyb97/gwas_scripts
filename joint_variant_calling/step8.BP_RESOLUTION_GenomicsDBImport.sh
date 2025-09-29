@@ -5,8 +5,7 @@
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
 #SBATCH --mem-per-cpu 8000
-#SBATCH --account=HMH19_sc
-#SBATCH --partition=sla-prio
+
 
 # Define variables
 VCF="vcf_files"

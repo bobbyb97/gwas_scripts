@@ -1,24 +1,27 @@
 #!/bin/bash
-#SBATCH -J build_bam_index
-#SBATCH -n 8
-#SBATCH --time 3-023:59:00
+#SBATCH -J replace_RG
+#SBATCH -n 24
+#SBATCH --time 1-023:59:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
-#SBATCH --account=HMH19_sc
-#SBATCH --partition=sla-prio
 
-input_dir="trimmed_fastq"
+IN_DIR="calferv_2025/trimmed_rd2_fastq_step2_batch6_24SEP"
+BAM_DIR="calferv_bam_batch6_24SEP"
+OUT_DIR="calferv_bams_fixed"
 
 ##--NOTHING BELOW THIS LINE SHOULD BE MODIFIED--##
+
+# create output directory if it doesn't exist
+mkdir -p ${OUT_DIR}
 
 # Generate the array of file pairs
 file_pairs=()
 
 # Separating file strings for later use
-for r1 in "$input_dir"/*_R1.fq.gz; do
+for r1 in "$IN_DIR"/*_R1.fq.gz; do
     r2="${r1/_R1.fq.gz/_R2.fq.gz}"
     if [[ -f "$r2" ]]; then
-        output="${r1/_R1.fq.gz/}"
+        output=$(basename "${r1/_R1.fq.gz/}")
         file_pairs+=("$r1 $r2 $output")
     else
         echo "Warning: No matching R2 file for $r1" >&2
@@ -33,13 +36,15 @@ for input in "${file_pairs[@]}"; do
     RGPU=$(zcat "${r1}" | head -1 | grep '^@' | sed 's/:/\t/g' | sed 's/.1/\t/' | cut -f1 | sed 's/@//')
 
     # Echo RGPU and output to verify the function is reading the correct values
-    # Included for
-    echo "${RGPU} ${output} ${r1} ${r2}"
+    # Included for debugging purposes
+    echo "Processing ${BAM_DIR}/${output}.bam... "
+    echo "Replacing ${RGPU} with ${output}, writing to ${OUT_DIR}/${output}_fixed.bam"
+	echo "----------------------------------------"
 
     # Add read groups with picard
     picard AddOrReplaceReadGroups \
-        INPUT="${output}.bam" \
-        OUTPUT="${output}_fixed.bam" \
+        INPUT="${BAM_DIR}/${output}.bam" \
+        OUTPUT="${OUT_DIR}/${output}_fixed.bam" \
         VALIDATION_STRINGENCY=LENIENT \
         RGID="${output}_RGID" \
         RGLB=lib1 \
