@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH -J gatk_variant_2
 #SBATCH -n 16
-#SBATCH --time 3-023:59:00
+#SBATCH --time 3-23:59:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
 #SBATCH --mem-per-cpu 24G
