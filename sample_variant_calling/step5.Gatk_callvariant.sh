@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -J gatk_variant_2
-#SBATCH -n 16
+#SBATCH -n 24
 #SBATCH --time 3-23:59:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
@@ -45,7 +45,7 @@ export -f call_var
 export FQ_DIR input_dir output_dir REF
 
 
-parallel -j 16 call_var ::: "${file_pairs[@]}"
+parallel -j 24 call_var ::: "${file_pairs[@]}"
 
 
 # for input in "${file_pairs[@]}"; do

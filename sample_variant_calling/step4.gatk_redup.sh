@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -J gatk_markdup
-#SBATCH -n 16
+#SBATCH -n 32
 #SBATCH --time 3-023:58:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
@@ -11,7 +11,7 @@
 FQ_DIR="calferv_2025/trimmed_rd2_fastq"
 BAM_DIR="calferv_bams_fixed"
 OUT_DIR="sorted_dedup"
-N_TASKS=4
+N_TASKS=2
 
 
 mkdir -p ${OUT_DIR}/metrics
@@ -37,7 +37,7 @@ process_pair() {
 		-I ${BAM_DIR}/${output}_fixed.bam \
 		-M ${OUT_DIR}/metrics/${output}_dedup_metrics.txt \
 		-O ${OUT_DIR}/${output}_sorted_dedup_reads.bam \
-		--conf 'spark.executor.cores=4' \
+		--conf 'spark.executor.cores=16' \
 		--conf 'spark.executor.memory=24g'
 }
 
