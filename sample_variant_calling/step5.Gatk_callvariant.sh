@@ -1,6 +1,7 @@
 #!/bin/bash
 #SBATCH -J gatk_variant_2
-#SBATCH -n 24
+#SBATCH --nodes 1
+#SBATCH --n-tasks 24
 #SBATCH --time 3-23:59:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
@@ -8,9 +9,11 @@
 #SBATCH --account=hmh19_cr_default
 #SBATCH --partition=standard
 
-FQ_DIR="calferv_2025/trimmed_rd2_fastq"
-input_dir="sorted_dedup"
-output_dir="calferv25_vcf_files"
+
+# MAKE SURE YOU USE THE CORRECT PLOIDY #
+
+input_dir="calferv_2024/renamed_dedup"
+output_dir="calferv24_vcf_files"
 REF="/storage/home/rjb6794/scratch/ncbi_dataset/data/GCF_041682495.2/GCF_041682495.2_iyBomFerv1_genomic.fna"
 
 file_pairs=()
@@ -19,24 +22,19 @@ mkdir -p ${output_dir}
 
 # Generating array of file names
 # Separating strings for later use
-for r1 in "$FQ_DIR"/*_R1.fq.gz; do
-    r2="${r1/_R1.fq.gz/_R2.fq.gz}"
-    if [[ -f "$r2" ]]; then
-		output=$(basename "${r1/_R1.fq.gz/}")
-        file_pairs+=("$r1 $r2 $output")
-    else
-        echo "Warning: No matching R2 file for $r1" >&2
-    fi
+for r1 in "$input_dir"/*_sorted_dedup_reads.bam.renamed.bam; do
+		output=$(basename "${r1/_sorted_dedup_reads.bam.renamed.bam/}")
+		file_pairs+=("$output")
 done
 
 call_var() {
-	IFS=' ' read -r r1 r2 output <<< "$1"
+	output="$1"
 	echo "Calling variants for ${output}, writing to ${output_dir}/${output}_raw_variant.g.vcf"
 	micromamba run -n gatk gatk HaplotypeCaller\
 		-R ${REF}\
-		-I ${input_dir}/${output}_sorted_dedup_reads.bam\
+		-I ${input_dir}/${output}_sorted_dedup_reads.bam.renamed.bam\
 		-O ${output_dir}/${output}_raw_variant.g.vcf\
-		-ploidy 2\
+		-ploidy 1\
 		-ERC BP_RESOLUTION
 }
 

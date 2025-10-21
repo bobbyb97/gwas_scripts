@@ -1,11 +1,12 @@
 #!/bin/bash
 #SBATCH -J gatk_aggregate
-#SBATCH -n 8
-#SBATCH --time 1-23:59:00
+#SBATCH -n 12
+#SBATCH --time 2-023:59:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
 #SBATCH --mem-per-cpu 32G
-
+#SBATCH --account=hmh19_cr_default
+#SBATCH --partition=standard
 
 # Define variables
 VCF="calferv25_vcf_files"
@@ -17,13 +18,13 @@ REF="ncbi_dataset/data/GCF_041682495.2/GCF_041682495.2_iyBomFerv1_genomic.fna"
 mkdir -p ${TMP_DIR}
 
 # Create GVCF map file
-for f in ${VCF}/*.g.vcf.gz; do
-    sample_id=$(echo $f | grep -oP 'vcf_files\/\K(.*?)(?=_trimmed_raw_variant\.g\.vcf\.gz)')
-    echo -e "${sample_id}\t${f}" >> ${VCF}/gvcf.sample_map
-done
+# for f in ${VCF}/*.g.vcf.gz; do
+#     sample_id=$(echo $f | grep -oP 'vcf_files\/\K(.*?)(?=_trimmed_raw_variant\.g\.vcf\.gz)')
+#     echo -e "${sample_id}\t${f}" >> ${VCF}/gvcf.sample_map
+# done
 
 # Create intervals file
-cat ${REF}.fai | cut -f 1 > ${VCF}/intervals.intervals
+# cat ${REF}.fai | cut -f 1 > ${VCF}/intervals.intervals
 
 # Aggregate all samples together for joint genotyping
 
@@ -34,4 +35,4 @@ micromamba run -n gatk gatk GenomicsDBImport\
     -L ${VCF}/intervals.intervals\
 	--reader-threads 4 \
     --max-num-intervals-to-import-in-parallel 2 \
-    --batch-size 10
+    --batch-size 18

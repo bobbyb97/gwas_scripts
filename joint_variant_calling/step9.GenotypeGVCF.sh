@@ -1,21 +1,24 @@
 #!/bin/bash
 #SBATCH -J gatk_genotypegvcf
-#SBATCH -n 32
-#SBATCH --time 6-023:59:00
+#SBATCH -n 1
+#SBATCH --cpus-per-task=8
+#SBATCH --time 1-23:59:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
-#SBATCH --mem-per-cpu 24G
-#SBATCH --account=hmh19_cr_default
-#SBATCH --partition=standard
+#SBATCH --mem-per-cpu=24G
+
+
+### --account=hmh19_cr_default
+### --partition=standard
 
 # Define variables
-VCF="vcf_files"
-GENDB="vcf_files/genomicDB"
-TMP_DIR="vcf_files/tmp"
-REF="GCA_041682495.1_iyBomFerv1_genomic.fna"
+VCF="calferv_2025/calferv25_vcf_files"
+GENDB="calferv_2025/calferv25_vcf_files/genomicDB"
+TMP_DIR="calferv_2025/calferv25_vcf_files/tmp"
+REF="ncbi_dataset/data/GCF_041682495.2/GCF_041682495.2_iyBomFerv1_genomic.fna"
 
 # Genotype aggregated VCFs
-gatk GenotypeGVCFs\
+micromamba run -n gatk gatk GenotypeGVCFs\
     -R ${REF}\
     -V gendb://${GENDB}\
     -O ${VCF}/joint_vcf_call_bpres.vcf.gz

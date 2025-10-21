@@ -1,17 +1,17 @@
 #!/bin/bash
 #SBATCH -J bwa_align2
-#SBATCH -n 1
-#SBATCH --mem-per-cpu 24G
-#SBATCH --time 23:59:00
+#SBATCH -n 16
+#SBATCH --mem-per-cpu 32G
+#SBATCH --time 2-23:59:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
 #SBATCH --account=hmh19_cr_default
 #SBATCH --partition=standard
 
 # Define the input directory and reference genome
-input_dir=/storage/home/rjb6794/scratch/calferv_2025/trimmed_rd2_fastq_step2_batch6_24SEP
+input_dir=/storage/home/rjb6794/scratch/calferv_2024/trimmed_fastq
 REF=/storage/home/rjb6794/scratch/ncbi_dataset/data/GCF_041682495.2/GCF_041682495.2_iyBomFerv1_genomic.fna
-OUTDIR=/storage/home/rjb6794/scratch/calferv_bam_batch6_24SEP
+OUTDIR=/storage/home/rjb6794/scratch/calferv_2024/bam_files
 
 # Index the reference genome (only needs to be done once)
 #bwa index ${REF}
@@ -26,7 +26,7 @@ align_reads() {
     local r2="$2"
     local output="$3"
     # Align the files to genome
-    echo "Processing $r1 $r2 $output"
+    echo "Processing $r1 $r2, writing to ${OUTDIR}/${output}.bam"
     bwa mem -T 16 ${REF} "$r1" "$r2" | samtools view -b | samtools sort > ${OUTDIR}/"${output}.bam"
 }
 

@@ -1,13 +1,15 @@
 #!/bin/bash
 #SBATCH -J replace_RG
-#SBATCH -n 24
+#SBATCH -n 1
+#SBATCH --cpus-per-task=4
+#SBATCH --mem-per-cpu=8G
 #SBATCH --time 1-023:59:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
 
-IN_DIR="calferv_2025/trimmed_rd2_fastq_step2_batch6_24SEP"
-BAM_DIR="calferv_bam_batch6_24SEP"
-OUT_DIR="calferv_bams_fixed"
+IN_DIR="calferv_2024/trimmed_fastq"
+BAM_DIR="calferv_2024/bam_files"
+OUT_DIR="calferv_2024/calferv_bams_fixed"
 
 ##--NOTHING BELOW THIS LINE SHOULD BE MODIFIED--##
 

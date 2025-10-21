@@ -1,17 +1,21 @@
 #!/bin/bash
 #SBATCH -J gatk_markdup
-#SBATCH -n 32
-#SBATCH --time 3-023:58:00
+#SBATCH --nodes 1
+#SBATCH --ntasks 16
+#SBATCH --cpus-per-task=1
+#SBATCH --time 1-023:59:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
-#SBATCH --mem-per-cpu 24G
-#SBATCH --account=hmh19_cr_default
-#SBATCH --partition=standard
+#SBATCH --mem-per-cpu 8G
+#SBATCH --output=%x_%j.out
+#SBATCH --error=%x_%j.err
 
-FQ_DIR="calferv_2025/trimmed_rd2_fastq"
-BAM_DIR="calferv_bams_fixed"
-OUT_DIR="sorted_dedup"
-N_TASKS=2
+# --account=hmh19_cr_default
+#--partition=standard
+
+BAM_DIR="calferv_2024/calferv_bams_fixed"
+OUT_DIR="calferv_2024/sorted_dedup"
+N_TASKS=16
 
 
 mkdir -p ${OUT_DIR}/metrics
@@ -20,32 +24,28 @@ file_pairs=()
 
 # Generating array of file names
 # Separating strings for later use
-for r1 in "$FQ_DIR"/*_R1.fq.gz; do
-    r2="${r1/_R1.fq.gz/_R2.fq.gz}"
-    if [[ -f "$r2" ]]; then
-		output=$(basename "${r1/_R1.fq.gz/}")
-        file_pairs+=("$r1 $r2 $output")
-    else
-        echo "Warning: No matching R2 file for $r1" >&2
-    fi
+for file in "$BAM_DIR"/*_trimmed_fixed.bam; do
+		output=$(basename "${file/_trimmed_fixed.bam/}")
+		file_pairs+=("$output")
 done
 
 process_pair() {
-	IFS=' ' read -r r1 r2 output <<< "$1"
-	echo "Processing ${r1} and ${r2}, writing to ${OUT_DIR}/${output}_sorted_dedup_reads.bam"
+	bam_file=$1
+	echo "Processing ${bam_file}, writing to ${OUT_DIR}/${bam_file}_sorted_dedup_reads.bam"
 	micromamba run -n gatk gatk MarkDuplicatesSpark \
-		-I ${BAM_DIR}/${output}_fixed.bam \
-		-M ${OUT_DIR}/metrics/${output}_dedup_metrics.txt \
-		-O ${OUT_DIR}/${output}_sorted_dedup_reads.bam \
+		-I ${BAM_DIR}/${bam_file}_trimmed_fixed.bam \
+		-M ${OUT_DIR}/metrics/${bam_file}_dedup_metrics.txt \
+		-O ${OUT_DIR}/${bam_file}_sorted_dedup_reads.bam \
 		--conf 'spark.executor.cores=16' \
-		--conf 'spark.executor.memory=24g'
+		--conf 'spark.executor.memory=4g'
 }
 
 
-export FQ_DIR BAM_DIR OUT_DIR N_TASKS 
+export BAM_DIR OUT_DIR N_TASKS
+export file_pairs
 export -f process_pair
 
-parallel -j ${N_TASKS} process_pair ::: "${file_pairs[@]}"
+micromamba run -n bioinfo parallel -j ${N_TASKS} process_pair ::: "${file_pairs[@]}"
 
 
 ## slow way ##
