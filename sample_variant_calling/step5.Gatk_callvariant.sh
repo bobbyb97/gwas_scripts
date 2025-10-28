@@ -5,15 +5,15 @@
 #SBATCH --time 3-23:59:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
-#SBATCH --mem-per-cpu 24G
+#SBATCH --mem-per-cpu 16G
 #SBATCH --account=hmh19_cr_default
 #SBATCH --partition=standard
 
 
 # MAKE SURE YOU USE THE CORRECT PLOIDY #
 
-input_dir="calferv_2024/renamed_dedup"
-output_dir="calferv24_vcf_files"
+input_dir="calferv_2024/haploid_bams"
+output_dir="calferv_2024/haploid_vcf_files"
 REF="/storage/home/rjb6794/scratch/ncbi_dataset/data/GCF_041682495.2/GCF_041682495.2_iyBomFerv1_genomic.fna"
 
 file_pairs=()
@@ -22,8 +22,8 @@ mkdir -p ${output_dir}
 
 # Generating array of file names
 # Separating strings for later use
-for r1 in "$input_dir"/*_sorted_dedup_reads.bam.renamed.bam; do
-		output=$(basename "${r1/_sorted_dedup_reads.bam.renamed.bam/}")
+for r1 in "$input_dir"/*_sorted_dedup_reads.bam; do
+		output=$(basename "${r1/_sorted_dedup_reads.bam/}")
 		file_pairs+=("$output")
 done
 
