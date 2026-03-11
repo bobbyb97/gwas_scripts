@@ -2,9 +2,9 @@
 #SBATCH -J bwa_mem_array
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=8
-#SBATCH --mem=24G
-#SBATCH --time=12:00:00
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=1G
+#SBATCH --time=1:00:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
 #SBATCH --array=0-20%10
@@ -29,7 +29,7 @@ micromamba activate bioinfo
 
 # Define the input, output directories and reference genome
 IN_DIR=pen_proj/trimmed_fastq_2
-OUT_DIR=pen_proj/bam_files/bwa_v3_Mar11
+OUT_DIR=pen_proj/bam_files/bwa_v2_Feb27
 
 REF=pen_proj/ref_genome/data/GCA_051853225.1/GCA_051853225.1_iyBomPens1_principal_genomic.fna
 
@@ -91,7 +91,7 @@ fi
 
 ##### MAIN COMMAND #####
 # Align the reads to the reference genome, convert to BAM, and sort
-	# bwa mem -t $SLURM_CPUS_PER_TASK ${REF} ${IN_DIR}/${R1} ${IN_DIR}/${R2}\
+	# bwa aln -t $SLURM_CPUS_PER_TASK ${REF} ${IN_DIR}/${R1} ${IN_DIR}/${R2}\
 	# -R "@RG\tID:${RG_ID}\tLB:${RG_LB}\tPL:${RG_PL}\tPU:${RG_PU}\tSM:${RG_SM}" \
 	# | samtools view -u \
 	# | samtools sort -o ${OUT_DIR}/${SAMPLE_NAME}_sorted.bam

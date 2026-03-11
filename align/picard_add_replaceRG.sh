@@ -6,17 +6,12 @@
 #SBATCH --time 6:59:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
-#SBATCH --array=0-19%10
+#SBATCH --array=0-20%10
 #SBATCH --output=%x_%A_%a.out
 #SBATCH --error=%x_%A_%a.err
 
-
-
-###debugging###
-## assign SLURM_ARRAY_TASK_ID for testing
-
-IN_DIR="calferv_proj/calferv_26/trimmed_fastq_2"
-BAM_DIR="calferv_proj/calferv_26/bam_files"
+IN_DIR="pen_proj/trimmed_fastq_2"
+BAM_DIR="pen_proj/bam_files/bwa_v2_Feb27"
 OUT_DIR="${BAM_DIR}/bam_with_RG"
 
 ##--NOTHING BELOW THIS LINE SHOULD BE MODIFIED--##
@@ -50,7 +45,7 @@ mkdir -p ${OUT_DIR}
     # Define all Picard Read Group variables explicitly
     # Adding the sample ID ($output) to ID and PU ensures uniqueness
     RG_ID="${FLOWCELL}.${LANE}.${SAMPLE_NAME}"
-    RG_LB="${SAMPLE_NAME}_lib2"
+    RG_LB="${SAMPLE_NAME}_lib1"
     RG_PL="ILLUMINA"
     RG_PU="${FLOWCELL}.${LANE}.${SAMPLE_NAME}"
     RG_SM="${SAMPLE_NAME}"

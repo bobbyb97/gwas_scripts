@@ -7,15 +7,15 @@
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
 #SBATCH --mem-per-cpu=1G
-#SBATCH --array=0-29%10
+#SBATCH --array=0-20%10
 #SBATCH --output=%x_%A_%a.out
 #SBATCH --error=%x_%A_%a.err
 
 CONDA="micromamba run -n bioinfo"
 
 # Define variables
-IN_DIR=calferv_proj/calferv_24/bam_files/bam_with_RG
-OUT_DIR=calferv_proj/calferv_24/bam_files/qc_stats
+IN_DIR=pen_proj/bam_files/bwa_v2_Feb27/bam_with_RG_dedup
+OUT_DIR=pen_proj/bam_files/bwa_v2_Feb27/bam_with_RG_dedup/qc_stats
 
 # Create variables
 

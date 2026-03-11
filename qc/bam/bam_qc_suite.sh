@@ -6,8 +6,8 @@
 #SBATCH --time=5:59:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
-#SBATCH --mem-per-cpu=4G
-#SBATCH --array=0-56%10
+#SBATCH --mem-per-cpu=2G
+#SBATCH --array=0-97%10
 #SBATCH --output=%x_%A_%a.out
 #SBATCH --error=%x_%A_%a.err
 
@@ -16,8 +16,8 @@
 ## set SLURM_ARRAY_TASK_ID manually for testing
 
 # Define the input, output directories and reference genome
-IN_DIR=calferv_proj/calferv_25/bam_files/bam_with_RG
-OUT_DIR=calferv_proj/calferv_25/bam_files/qc_stats
+IN_DIR=calferv_proj/GWAS_2026/bam
+OUT_DIR=calferv_proj/GWAS_2026/bam/qc_stats
 
 REF=calferv_proj/ref_genome/data/GCF_041682495.2/GCF_041682495.2_iyBomFerv1_genomic.fna
 

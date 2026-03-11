@@ -1,58 +1,48 @@
 #!/bin/bash
-#SBATCH -J gatk_variant_2
+#SBATCH -J haplotype_caller_array
 #SBATCH --nodes 1
-#SBATCH --n-tasks 24
-#SBATCH --time 3-23:59:00
+#SBATCH --ntasks 1
+#SBATCH --time 23:59:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
-#SBATCH --mem-per-cpu 16G
-#SBATCH --account=hmh19_cr_default
-#SBATCH --partition=standard
+#SBATCH --mem-per-cpu 12G
+#SBATCH --array=0-66%10
+#SBATCH --output=%x_%A_%a.out
+#SBATCH --error=%x_%A_%a.err
 
 
 # MAKE SURE YOU USE THE CORRECT PLOIDY #
 
-input_dir="calferv_2024/haploid_bams"
-output_dir="calferv_2024/haploid_vcf_files"
-REF="/storage/home/rjb6794/scratch/ncbi_dataset/data/GCF_041682495.2/GCF_041682495.2_iyBomFerv1_genomic.fna"
+IN_DIR=calferv_proj/GWAS_2026/bam
+OUT_DIR=calferv_proj/GWAS_2026/vcf/raw_vcf
+SUFFIX="_trimmed_sorted_RG_dedup.bam"
 
-file_pairs=()
-mkdir -p ${output_dir}
+REF=calferv_proj/ref_genome/data/GCF_041682495.2/GCF_041682495.2_iyBomFerv1_genomic.fna
+
+mkdir -p ${OUT_DIR}
 
 
-# Generating array of file names
-# Separating strings for later use
-for r1 in "$input_dir"/*_sorted_dedup_reads.bam; do
-		output=$(basename "${r1/_sorted_dedup_reads.bam/}")
-		file_pairs+=("$output")
-done
+	# Read full sample paths into array
+		SAMPLES=(${IN_DIR}/*.bam)
+
+	# Define sample basenames
+		SAMPLE_NAMES=("${SAMPLES[@]##*/}")
+		SAMPLE_NAMES=("${SAMPLE_NAMES[@]%${SUFFIX}}") 
+
+	# Grab specific sample from array 
+		SAMPLE_NAME=${SAMPLE_NAMES[$SLURM_ARRAY_TASK_ID]} 
+
+
 
 call_var() {
 	output="$1"
-	echo "Calling variants for ${output}, writing to ${output_dir}/${output}_raw_variant.g.vcf"
+	echo "Calling variants from ${output}${SUFFIX}, writing to ${OUT_DIR}/${output}_raw_variant.gvcf"
 	micromamba run -n gatk gatk HaplotypeCaller\
 		-R ${REF}\
-		-I ${input_dir}/${output}_sorted_dedup_reads.bam.renamed.bam\
-		-O ${output_dir}/${output}_raw_variant.g.vcf\
-		-ploidy 1\
-		-ERC BP_RESOLUTION
+		-I ${IN_DIR}/${output}${SUFFIX}\
+		-O ${OUT_DIR}/${output}_raw_variant.gvcf\
+		-ploidy 2 \
+		-ERC GVCF
 }
 
-# export files for parallel
-export -f call_var
-export FQ_DIR input_dir output_dir REF
-
-
-parallel -j 24 call_var ::: "${file_pairs[@]}"
-
-
-# for input in "${file_pairs[@]}"; do
-#     IFS=' ' read -r r1 r2 output <<< "$input"
-#     echo "Calling variants for ${output} from ${REF}, writing to ${output_dir}/${output}_raw_variant.g.vcf"
-#     gatk HaplotypeCaller\
-#      -R ${REF}\
-#      -I ${input_dir}/${output}_sorted_dedup_reads.bam\
-#      -O ${output_dir}/${output}_raw_variant.g.vcf\
-#      -ploidy 2\
-#      -ERC BP_RESOLUTION
-# done
+call_var ${SAMPLE_NAME}
