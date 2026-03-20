@@ -1,13 +1,13 @@
 #!/bin/bash
-#SBATCH -J bwa_mem_array
+#SBATCH -J bwa_aln_array
 #SBATCH --nodes=1
-#SBATCH --ntasks=1
+#SBATCH --ntasks=8
 #SBATCH --cpus-per-task=1
-#SBATCH --mem=1G
-#SBATCH --time=1:00:00
+#SBATCH --mem=24G
+#SBATCH --time=12:00:00
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
-#SBATCH --array=0-20%10
+#SBATCH --array=0-20%5
 #SBATCH --output=%x_%A_%a.out
 #SBATCH --error=%x_%A_%a.err
 
@@ -22,14 +22,11 @@ micromamba activate bioinfo
 
 ####--debugging--#####
 ## assign SLURM_ARRAY_TASK_ID for testing
-#echo "Found ${NUM_SAMPLES} samples in ${IN_DIR}"
-#echo "${SAMPLE_NAMES[@]}"
-#NUM_SAMPLES=${#SAMPLES[@]}
 
 
 # Define the input, output directories and reference genome
 IN_DIR=pen_proj/trimmed_fastq_2
-OUT_DIR=pen_proj/bam_files/bwa_v2_Feb27
+OUT_DIR=pen_proj/bam_files/bwa_aln_v1
 
 REF=pen_proj/ref_genome/data/GCA_051853225.1/GCA_051853225.1_iyBomPens1_principal_genomic.fna
 
@@ -90,20 +87,33 @@ fi
 
 
 ##### MAIN COMMAND #####
+
+	echo "Aligning ${SAMPLE_NAME} with bwa aln..."
+	echo "Writing to ${OUT_DIR}/${SAMPLE_NAME}_sorted.bam"
+	echo "bwa aln -t $SLURM_CPUS_PER_TASK ${REF} ${IN_DIR}/${R1}"
+	echo "bwa aln -t $SLURM_CPUS_PER_TASK ${REF} ${IN_DIR}/${R2}"
+	echo "bwa sampe -r \"@RG\tID:${RG_ID}\tLB:${RG_LB}\tPL:${RG_PL}\tPU:${RG_PU}\tSM:${RG_SM}"
+	echo "${SAMPLE_NAME}_R1.sai ${SAMPLE_NAME}_R2.sai ${IN_DIR}/${R1} ${IN_DIR}/${R2}" 
+	echo "| samtools sort -o ${OUT_DIR}/${SAMPLE_NAME}_sorted.bam"
+
 # Align the reads to the reference genome, convert to BAM, and sort
-	# bwa aln -t $SLURM_CPUS_PER_TASK ${REF} ${IN_DIR}/${R1} ${IN_DIR}/${R2}\
-	# -R "@RG\tID:${RG_ID}\tLB:${RG_LB}\tPL:${RG_PL}\tPU:${RG_PU}\tSM:${RG_SM}" \
-	# | samtools view -u \
-	# | samtools sort -o ${OUT_DIR}/${SAMPLE_NAME}_sorted.bam
+	bwa aln -l 1024 -n 0.01 -o 2 -t $SLURM_CPUS_PER_TASK ${REF} ${IN_DIR}/${R1} > "${SAMPLE_NAME}_R1.sai"
+	bwa aln -l 1024 -n 0.01 -o 2 -t $SLURM_CPUS_PER_TASK ${REF} ${IN_DIR}/${R2} > "${SAMPLE_NAME}_R2.sai"
 
+	echo "Merging and sorting alignments for ${SAMPLE_NAME}..."
+	bwa sampe -r "@RG\tID:${RG_ID}\tLB:${RG_LB}\tPL:${RG_PL}\tPU:${RG_PU}\tSM:${RG_SM}" \
+		${REF} \
+		"${SAMPLE_NAME}_R1.sai" "${SAMPLE_NAME}_R2.sai" \
+		${IN_DIR}/${R1} ${IN_DIR}/${R2} | samtools view -bS - | samtools sort -@ "$SLURM_CPUS_PER_TASK" -o ${OUT_DIR}/${SAMPLE_NAME}_sorted.bam -
 
+	rm ${SAMPLE_NAME}_R1.sai ${SAMPLE_NAME}_R2.sai
 
 
 ### Error check ###
-EXIT_CODE=${PIPESTATUS[0]}  # Capture bwa mem exit code specifically
+EXIT_CODE=${PIPESTATUS[0]}  # Capture bwa aln exit code specifically
 
 if [[ $EXIT_CODE -ne 0 ]]; then
-    echo "ERROR: bwa mem failed for $SAMPLE_NAME with exit code $EXIT_CODE" >&2
+    echo "ERROR: bwa aln failed for $SAMPLE_NAME with exit code $EXIT_CODE" >&2
     exit $EXIT_CODE
 fi
 

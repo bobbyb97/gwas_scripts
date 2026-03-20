@@ -6,24 +6,27 @@
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
 #SBATCH --mem-per-cpu 12G
-#SBATCH --array=0-66%10
+#SBATCH --array=0%10
 #SBATCH --output=%x_%A_%a.out
 #SBATCH --error=%x_%A_%a.err
 
-
 # MAKE SURE YOU USE THE CORRECT PLOIDY #
 
-IN_DIR=calferv_proj/GWAS_2026/bam
-OUT_DIR=calferv_proj/GWAS_2026/vcf/raw_vcf
+IN_DIR=calferv_proj/GWAS_2026/bam/haploid
+OUT_DIR=calferv_proj/GWAS_2026/vcf/raw_vcf/haploid
 SUFFIX="_trimmed_sorted_RG_dedup.bam"
 
 REF=calferv_proj/ref_genome/data/GCF_041682495.2/GCF_041682495.2_iyBomFerv1_genomic.fna
+
+PLOIDY=1
+
+
 
 mkdir -p ${OUT_DIR}
 
 
 	# Read full sample paths into array
-		SAMPLES=(${IN_DIR}/*.bam)
+		SAMPLES=(${IN_DIR}/JBUK344Y*)
 
 	# Define sample basenames
 		SAMPLE_NAMES=("${SAMPLES[@]##*/}")
@@ -41,7 +44,7 @@ call_var() {
 		-R ${REF}\
 		-I ${IN_DIR}/${output}${SUFFIX}\
 		-O ${OUT_DIR}/${output}_raw_variant.gvcf\
-		-ploidy 2 \
+		-ploidy ${PLOIDY} \
 		-ERC GVCF
 }
 

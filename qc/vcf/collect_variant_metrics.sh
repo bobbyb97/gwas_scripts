@@ -11,23 +11,29 @@
 #SBATCH --output=%x_%A_%a.out
 #SBATCH --error=%x_%A_%a.err
 
-IN_DIR=calferv_proj/GWAS_2026/vcf/raw_vcf/haploid
-OUT_DIR=${IN_DIR}/vcf_stats
+IN_DIR=calferv_proj/GWAS_2026/vcf/raw_vcf/
+OUT_DIR=${IN_DIR}/vcf_stats/metrics
+REF=calferv_proj/ref_genome/data/GCF_041682495.2/GCF_041682495.2_iyBomFerv1_genomic.fna
+DBSNP=calferv_proj/GWAS_2026/vcf/dbsnp/dbsnp.vcf.gz
 
-# make output directory if it doesn't exist
+SLURM_ARRAY_TASK_ID=0
+
 mkdir -p ${OUT_DIR}
 
-# define stats function
-stats() {
-	local vcf="$1"
-	echo "Processing $vcf, writing to ${OUT_DIR}/$(basename "${vcf%.gvcf.gz}")"
-	micromamba run -n bioinfo bcftools stats $vcf > ${OUT_DIR}/$(basename "${vcf%.gvcf.gz}").gvcf.stats
+collect_metrics() {
+	local VCF="$1"
+	echo "Processing $VCF, writing to ${OUT_DIR}/$(basename "${VCF%.gvcf.gz}")"
+	# micromamba run -n gatk gatk CollectVariantCallingMetrics \
+	# --REFERENCE_SEQUENCE ${REF} \
+	# --DBSNP ${DBSNP} \
+	# --INPUT ${VCF} \
+	# --OUTPUT ${OUT_DIR}/$(basename "${VCF%.gvcf.gz}")
 }
 
 # Create variables
 
 	# Read full sample paths into array
-		SAMPLES=(${IN_DIR}/JBUK344Y*)
+		SAMPLES=(${IN_DIR}/*.gvcf.gz)
 
 	# # Define sample basenames
 	# 	SAMPLE_NAMES=("${SAMPLES[@]##*/}")
@@ -41,5 +47,4 @@ stats() {
 	# Echo slurm array task ID and sample name for debugging
 		echo "Task ID $SLURM_ARRAY_TASK_ID: Conducting VCF QC for $(basename "${VCF%.gvcf.gz}")"
 
-
-stats ${VCF}
+collect_metrics ${VCF}
