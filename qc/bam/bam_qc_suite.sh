@@ -7,7 +7,7 @@
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
 #SBATCH --mem-per-cpu=2G
-#SBATCH --array=0-97%10
+#SBATCH --array=0-2%10
 #SBATCH --output=%x_%A_%a.out
 #SBATCH --error=%x_%A_%a.err
 
@@ -16,10 +16,10 @@
 ## set SLURM_ARRAY_TASK_ID manually for testing
 
 # Define the input, output directories and reference genome
-IN_DIR=calferv_proj/GWAS_2026/bam
-OUT_DIR=calferv_proj/GWAS_2026/bam/qc_stats
+IN_DIR=pen_proj/bam_files/bwa_mem_imp_v2_Mar25/trimmed_sorted_bam_with_RG_dedup
+OUT_DIR=${IN_DIR}/qc_stats
 
-REF=calferv_proj/ref_genome/data/GCF_041682495.2/GCF_041682495.2_iyBomFerv1_genomic.fna
+REF=pen_proj/ref_genome/data/GCA_043295415.1/GCA_043295415.1_Bimp3.0_genomic.fna
 
 # make output directory if it doesn't exist
 mkdir -p ${OUT_DIR}

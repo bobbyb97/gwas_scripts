@@ -7,12 +7,13 @@
 #SBATCH --mail-type=ALL,TIME_LIMIT_80
 #SBATCH --mail-user=rjb6794
 #SBATCH --mem-per-cpu=1G
-#SBATCH --array=0%10
+#SBATCH --array=0-11
 #SBATCH --output=%x_%A_%a.out
 #SBATCH --error=%x_%A_%a.err
 
 IN_DIR=calferv_proj/GWAS_2026/vcf/raw_vcf/haploid
 OUT_DIR=${IN_DIR}/vcf_stats
+SUFFIX=".gvcf.gz"
 
 # make output directory if it doesn't exist
 mkdir -p ${OUT_DIR}
@@ -20,26 +21,20 @@ mkdir -p ${OUT_DIR}
 # define stats function
 stats() {
 	local vcf="$1"
-	echo "Processing $vcf, writing to ${OUT_DIR}/$(basename "${vcf%.gvcf.gz}")"
-	micromamba run -n bioinfo bcftools stats $vcf > ${OUT_DIR}/$(basename "${vcf%.gvcf.gz}").gvcf.stats
+	echo "Processing $vcf, writing to ${OUT_DIR}/$(basename "${vcf%${SUFFIX}}")"
+	micromamba run -n bioinfo bcftools stats $vcf > ${OUT_DIR}/$(basename "${vcf%${SUFFIX}}").vcf.stats
 }
 
 # Create variables
 
 	# Read full sample paths into array
-		SAMPLES=(${IN_DIR}/JBUK344Y*)
-
-	# # Define sample basenames
-	# 	SAMPLE_NAMES=("${SAMPLES[@]##*/}")
-	# 	SAMPLE_NAMES=("${SAMPLE_NAMES[@]%_trimmed_sorted.bam}") 
+		SAMPLES=(${IN_DIR}/*${SUFFIX})
 
 	# Grab specific sample from array 
 		VCF=${SAMPLES[$SLURM_ARRAY_TASK_ID]} 
-	# # Define bam file names off of specific sample name
-	# 	BAM="${SAMPLE_NAME}_trimmed_sorted.bam"
 
 	# Echo slurm array task ID and sample name for debugging
-		echo "Task ID $SLURM_ARRAY_TASK_ID: Conducting VCF QC for $(basename "${VCF%.gvcf.gz}")"
+		echo "Task ID $SLURM_ARRAY_TASK_ID: Conducting VCF QC for $(basename "${VCF%${SUFFIX}}")"
 
 
 stats ${VCF}
