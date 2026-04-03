@@ -15,7 +15,7 @@ JAVA_OPTS="-Xmx8g"
 
 # Define required inputs
 REF=calferv_proj/ref_genome/data/GCF_041682495.2/GCF_041682495.2_iyBomFerv1_genomic.fna
-IN_DIR=calferv_proj/GWAS_2026/vcf/joint
+IN_DIR=calferv_proj/GWAS_2026/vcf/joint/v3
 OUT_DIR=calferv_proj/GWAS_2026/vcf/BQSR
 JOINT_GVCF=${IN_DIR}/all_scaffolds_merged.gvcf.gz
 
@@ -34,19 +34,19 @@ MERGED_HARD_FILTERED_VCF=${OUT_DIR}/exclude_hard_filtered_vars.vcf.gz
 ### Variant selection and filtering for known variants for BQSR bootstrapping ####
 # echo "Starting variant type selection and filtering for BQSR bootstrapping: $(date +%D_%T)"
 
-# # Select base SNP file
-# 	${CONDA} gatk --java-options ${JAVA_OPTS} SelectVariants \
-# 	--reference ${REF} \
-# 	--V ${JOINT_GVCF} \
-# 	--select-type SNP \
-# 	--O ${SNP_GVCF}
+# Select base SNP file
+	${CONDA} gatk --java-options ${JAVA_OPTS} SelectVariants \
+	--reference ${REF} \
+	--V ${JOINT_GVCF} \
+	--select-type SNP \
+	--O ${SNP_GVCF}
 
-# # Select base indel file
-# 	${CONDA} gatk --java-options ${JAVA_OPTS} SelectVariants \
-# 	--reference ${REF} \
-# 	--V ${JOINT_GVCF} \
-# 	--select-type INDEL \
-# 	--O ${INDEL_GVCF}
+# Select base indel file
+	${CONDA} gatk --java-options ${JAVA_OPTS} SelectVariants \
+	--reference ${REF} \
+	--V ${JOINT_GVCF} \
+	--select-type INDEL \
+	--O ${INDEL_GVCF}
 
 echo "Finished selecting variants by type, now filtering SNPs: $(date +%D_%T)"
 # Filter variants for SNPs

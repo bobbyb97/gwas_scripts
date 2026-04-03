@@ -11,9 +11,9 @@
 #SBATCH --output=%x_%A_%a.out
 #SBATCH --error=%x_%A_%a.err
 
-IN_DIR=calferv_proj/GWAS_2026/vcf/raw_vcf/haploid
+IN_DIR=calferv_proj/GWAS_2026/vcf/BQSR
 OUT_DIR=${IN_DIR}/vcf_stats
-SUFFIX=".gvcf.gz"
+SUFFIX=".vcf.gz"
 
 # make output directory if it doesn't exist
 mkdir -p ${OUT_DIR}
